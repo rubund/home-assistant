@@ -9,13 +9,23 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
 
 class ExampleSensor(enocean.EnOceanDevice,Entity):
+
+    def __init__(self):
+        enocean.EnOceanDevice.__init__(self)
+        self.stype = "listener"
+        self.temp_temperature = 0
+
     @property
     def name(self):
         return 'Temperature'
 
+    def value_changed(self,value):
+        self.temp_temperature = value
+        self.update_ha_state()
+
     @property
     def state(self):
-        return 23
+        return self.temp_temperature
 
     @property
     def unit_of_measurement(self):

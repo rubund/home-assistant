@@ -20,11 +20,13 @@ def setup(hass,config):
 
 
 class EnOceanThread(threading.Thread):
-    def __init__(self,ser,lock,kwargs=None):
+    def __init__(self,ser,lock,callback,kwargs=None):
         threading.Thread.__init__(self,kwargs=kwargs)
         self.__lock = lock
         self.__ser = ser
         self.__running = True
+        self.__count = 0
+        self.__callback = callback
     def run(self):
         print("\n\nRunning thread\n\n")
         while self.__running:
@@ -32,6 +34,8 @@ class EnOceanThread(threading.Thread):
             with self.__lock:
                 data = self.__ser.read()
             print("\nData recived: "+str(data)+"\n")
+            self.__callback(self.__count)
+            self.__count = self.__count + 1
             time.sleep(1)
     def stop_this_one(self):
         self.__running = False
@@ -39,20 +43,33 @@ class EnOceanThread(threading.Thread):
 class EnOceanDongle:
     def __init__(self,hass,ser):
         self.__ser = serial.Serial(ser, 57600, timeout=0.1)
-        self.__thread = EnOceanThread(self.__ser,ENOCEAN_LOCK)
+        self.__thread = EnOceanThread(self.__ser,ENOCEAN_LOCK,self.callback)
         self.__thread.start()
+        self.__devices = []
 
     def __del__(self):
         self.__thread.stop_this_one()
         self.__thread.join()
 
+    def register_device(self,dev):
+        self.__devices.append(dev)
+
     def send_command(self,command):
         with(ENOCEAN_LOCK):
             self.__ser.write(command)
 
+    def callback(self,temp):
+        print("\n\nCalling back %d\n\n",temp)
+        for d in self.__devices:
+            if d.stype == "listener":
+                print("Found one listener")
+                d.value_changed(temp)
+
 class EnOceanDevice():
     def __init__(self):
         print("\n\nStarted device\n\n\n")
+        ENOCEAN_DONGLE.register_device(self)
+        self.stype = ""
 
     def send_command(self,command):
         ENOCEAN_DONGLE.send_command(command)
