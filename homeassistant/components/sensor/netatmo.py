@@ -70,17 +70,20 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     try:
         # Iterate each module
         for module_name, monitored_conditions in config[ATTR_MODULE].items():
+            module_not_found = False
             # Test if module exist """
             if module_name not in data.get_module_names():
                 _LOGGER.error('Module name: "%s" not found', module_name)
-                continue
+                module_not_found = True
             # Only create sensor for monitored """
             for variable in monitored_conditions:
+                sensor_not_found = False
                 if variable not in SENSOR_TYPES:
                     _LOGGER.error('Sensor type: "%s" does not exist', variable)
-                else:
-                    dev.append(
-                        NetAtmoSensor(data, module_name, variable))
+                    sensor_not_found = True
+
+                dev.append(
+                    NetAtmoSensor(data, module_name, variable,module_not_found, sensor_not_found))
     except KeyError:
         pass
 
@@ -91,7 +94,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 class NetAtmoSensor(Entity):
     """Implementation of a NetAtmo sensor."""
 
-    def __init__(self, netatmo_data, module_name, sensor_type):
+    def __init__(self, netatmo_data, module_name, sensor_type, module_not_found, sensor_not_found):
         """Initialize the sensor."""
         self._name = "NetAtmo {} {}".format(module_name,
                                             SENSOR_TYPES[sensor_type][0])
@@ -100,6 +103,8 @@ class NetAtmoSensor(Entity):
         self.type = sensor_type
         self._state = None
         self._unit_of_measurement = SENSOR_TYPES[sensor_type][1]
+        self.module_not_found = module_not_found
+        self.sensor_not_found = sensor_not_found
         self.update()
 
     @property
@@ -125,25 +130,49 @@ class NetAtmoSensor(Entity):
     # pylint: disable=too-many-branches
     def update(self):
         """Get the latest data from NetAtmo API and updates the states."""
-        self.netatmo_data.update()
+        if self.sensor_not_found or self.module_not_found:
+            self.netatmo_data.update(no_throttle=True)
+        else:
+            self.netatmo_data.update()
+        if not self.module_name in self.netatmo_data.data:
+            print("Did not find module %s" % self.module_name)
+            return
+        self.module_not_found = False
         data = self.netatmo_data.data[self.module_name]
 
+
         if self.type == 'temperature':
-            self._state = round(data['Temperature'], 1)
+            key = 'Temperature'
         elif self.type == 'humidity':
-            self._state = data['Humidity']
+            key = 'Humidity'
         elif self.type == 'rain':
-            self._state = data['Rain']
+            key = 'Rain'
         elif self.type == 'sum_rain_1':
-            self._state = data['sum_rain_1']
+            key = 'sum_rain_1'
         elif self.type == 'sum_rain_24':
-            self._state = data['sum_rain_24']
+            key = 'sum_rain_24'
         elif self.type == 'noise':
-            self._state = data['Noise']
+            key = 'Noise'
         elif self.type == 'co2':
-            self._state = data['CO2']
+            key = 'CO2'
         elif self.type == 'pressure':
-            self._state = round(data['Pressure'], 1)
+            key = 'Pressure'
+        else:
+            key = ''
+
+        if not key in data:
+            print("Did not find sensor %s" % key)
+            return
+        self.sensor_not_found = False
+
+        if key == '':
+            self._state = 0
+        elif self.type == 'temperature':
+            self._state = round(data[key], 1)
+        elif self.type == 'pressure':
+            self._state = round(data[key], 1)
+        else:
+            self._state = data[key]
 
 
 class NetAtmoData(object):
