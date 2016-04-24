@@ -9,7 +9,7 @@ from datetime import timedelta
 
 from homeassistant.components.sensor import DOMAIN
 from homeassistant.const import (
-    CONF_API_KEY, CONF_PASSWORD, CONF_USERNAME, TEMP_CELSIUS)
+    CONF_API_KEY, CONF_PASSWORD, CONF_USERNAME, TEMP_CELSIUS, CONF_STATION)
 from homeassistant.helpers import validate_config
 from homeassistant.helpers.entity import Entity
 from homeassistant.util import Throttle
@@ -64,7 +64,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
             "Please check your settings for NatAtmo API.")
         return False
 
-    data = NetAtmoData(authorization)
+    data = NetAtmoData(authorization,config.get(CONF_STATION,None))
 
     dev = []
     try:
@@ -149,10 +149,11 @@ class NetAtmoSensor(Entity):
 class NetAtmoData(object):
     """Get the latest data from NetAtmo."""
 
-    def __init__(self, auth):
+    def __init__(self, auth, station):
         """Initialize the data object."""
         self.auth = auth
         self.data = None
+        self.station = station
 
     def get_module_names(self):
         """Return all module available on the API as a list."""
@@ -164,4 +165,5 @@ class NetAtmoData(object):
         """Call the NetAtmo API to update the data."""
         import lnetatmo
         dev_list = lnetatmo.DeviceList(self.auth)
-        self.data = dev_list.lastData(exclude=3600)
+        
+        self.data = dev_list.lastData(station=self.station,exclude=3600)

@@ -23,6 +23,7 @@ CONF_ACCESS_TOKEN = 'access_token'
 CONF_AFTER = 'after'
 CONF_ALIAS = 'alias'
 CONF_API_KEY = 'api_key'
+CONF_STATION = "station"
 CONF_BEFORE = 'before'
 CONF_BELOW = 'below'
 CONF_CONDITION = 'condition'
