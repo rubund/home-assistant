@@ -73,12 +73,16 @@ class AwesomeLight(enocean.EnOceanDevice,Light):
     def turn_on(self, **kwargs):
         print("TUrning on")
         a = bytearray(b'\x55\x00\x0A\x00\x01\x80\xA5\x02\x64\x01\x09\xFF\xC6\xEA\x01\x00\x6E/')
-        self.send_command(a)
+        print("Wanted: "+str(a))
+        #self.send_command(a)
+        #self.send_command(data=[0x01,0x80,0xa5,0x02,0x64,0x09,0xff,0xc6,0xea,0x01],optional=[],packet_type=0x00)
+        self.send_command([0xa5,0x02,0x64,0x01,0x09,0xff,0xc6,0xea,0x01,0x00],[],0x01)
         self._on_state = True
 
     def turn_off(self, **kwargs):
         print("TUrning off")
         a = bytearray(b'\x55\x00\x0A\x00\x01\x80\xA5\x02\x00\x01\x08\xFF\xC6\xEA\x01\x00\xB9/')
-        self.send_command(a)
+        #self.send_command(a)
+        self.send_command([0xa5,0x02,0x00,0x01,0x08,0xff,0xc6,0xea,0x01,0x00],[],0x01)
         self._on_state = False
 

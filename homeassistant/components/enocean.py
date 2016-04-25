@@ -2,6 +2,7 @@
 import serial
 import threading
 import time
+from homeassistant.components import crc8
 
 DOMAIN = "enocean"
 
@@ -71,5 +72,18 @@ class EnOceanDevice():
         ENOCEAN_DONGLE.register_device(self)
         self.stype = ""
 
-    def send_command(self,command):
+    def send_command(self,data,optional,packet_type):
+        command = self.build_packet(data,optional,packet_type)
+        command = bytearray(command)
+        print("Got: "+str(command))
         ENOCEAN_DONGLE.send_command(command)
+
+    def build_packet(self,data,optional,packet_type):
+        data_length = len(data)
+        ords = [0x55, (data_length >> 8) & 0xFF, data_length & 0xFF, len(optional), int(packet_type)]
+        ords.append(crc8.calc(ords[1:5]))
+        ords.extend(data)
+        ords.extend(optional)
+        ords.append(crc8.calc(ords[6:]))
+        return ords
+        
