@@ -2,7 +2,7 @@
 import serial
 import threading
 import time
-from homeassistant.components import crc8
+from homeassistant.util import crc8
 
 DOMAIN = "enocean"
 
