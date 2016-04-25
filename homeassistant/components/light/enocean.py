@@ -1,7 +1,8 @@
 import logging
+import math
 
 # Import the device class from the component that you want to support
-from homeassistant.components.light import Light
+from homeassistant.components.light import Light, ATTR_BRIGHTNESS
 from homeassistant.const import CONF_HOST, CONF_USERNAME, CONF_PASSWORD
 from homeassistant.components import enocean
 
@@ -47,6 +48,7 @@ class AwesomeLight(enocean.EnOceanDevice,Light):
         self._light = None
         self._on_state = False
         self._on_state2 = False
+        self._brightness = 50
         print("\n\n\nHER ER JEG\n")
 
     def update(self):
@@ -63,7 +65,7 @@ class AwesomeLight(enocean.EnOceanDevice,Light):
         This method is optional. Removing it indicates to Home Assistant
         that brightness is not supported for this light.
         """
-        return 50
+        return self._brightness
 
     @property
     def is_on(self):
@@ -74,9 +76,15 @@ class AwesomeLight(enocean.EnOceanDevice,Light):
         print("TUrning on")
         a = bytearray(b'\x55\x00\x0A\x00\x01\x80\xA5\x02\x64\x01\x09\xFF\xC6\xEA\x01\x00\x6E/')
         print("Wanted: "+str(a))
+        brightness = kwargs.get(ATTR_BRIGHTNESS)
+        if brightness is not None:
+            self._brightness = brightness
+            print("Brightness: %d" % brightness)
+
+        bval = math.floor(self._brightness / 256.0 * 100.0)
         #self.send_command(a)
         #self.send_command(data=[0x01,0x80,0xa5,0x02,0x64,0x09,0xff,0xc6,0xea,0x01],optional=[],packet_type=0x00)
-        self.send_command([0xa5,0x02,0x64,0x01,0x09,0xff,0xc6,0xea,0x01,0x00],[],0x01)
+        self.send_command([0xa5,0x02,bval,0x01,0x09,0xff,0xc6,0xea,0x01,0x00],[],0x01)
         self._on_state = True
 
     def turn_off(self, **kwargs):
