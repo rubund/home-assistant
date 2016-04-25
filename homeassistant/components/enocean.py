@@ -53,6 +53,7 @@ class EnOceanThread(threading.Thread):
                                 print("%02x, " % p, end="")
                             print("")
                             self.receiving = False
+                            self.__callback(self.packet)
                         elif b == 0x55 and not self.receiving:
                             print("\nNew packet: ")
                             self.packet = [0x55]
@@ -71,7 +72,6 @@ class EnOceanThread(threading.Thread):
                         # 5: CRC;  dataLength + optionallength +1 CRC
                         self.pcounter = self.pcounter + 1
 
-            self.__callback(self.__count)
             self.__count = self.__count + 1
             time.sleep(0)
     def stop_this_one(self):
@@ -96,11 +96,14 @@ class EnOceanDongle:
             self.__ser.write(command)
 
     def callback(self,temp):
-        print("\n\nCalling back %d\n\n",temp)
+        print("\n\nCalling back %s\n\n",str(temp))
         for d in self.__devices:
             if d.stype == "listener":
                 print("Found one listener")
-                d.value_changed(temp)
+                if temp[7] == 0x50:
+                    d.value_changed(1)
+                elif temp[7] == 0x00:
+                    d.value_changed(0)
 
 class EnOceanDevice():
     def __init__(self):
