@@ -1,6 +1,7 @@
 from homeassistant.const import TEMP_CELCIUS
 from homeassistant.helpers.entity import Entity
 from homeassistant.components import enocean
+from homeassistant.const import ATTR_ENTITY_ID
 
 DEPENDENCIES = ["enocean"]
 
@@ -22,6 +23,7 @@ class ExampleSensor(enocean.EnOceanDevice,Entity):
     def value_changed(self,value):
         self.temp_temperature = value
         self.update_ha_state()
+        self.hass.bus.fire('button_pressed', { ATTR_ENTITY_ID: "Mine" , 'state' : value})
 
     @property
     def state(self):
