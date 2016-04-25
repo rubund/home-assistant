@@ -28,22 +28,54 @@ class EnOceanThread(threading.Thread):
         self.__running = True
         self.__count = 0
         self.__callback = callback
+        self.packet = []
+        self.pcounter = 0
+        self.datalength = 0
+        self.optionallength = 0
+        self.packettype = 0
+        self.receiving = False
     def run(self):
         print("\n\nRunning thread\n\n")
         while self.__running:
             print("Running: %d" % (self.__running))
             with self.__lock:
-                data = self.__ser.read()
-            print("\nData recived: "+str(data)+"\n")
+                data = bytearray([1])
+                while len(data) != 0:
+                    data = self.__ser.read()#,timeout=None)
+                    #self.rbuffer.extend(data)
+                    for b in data:
+                        if self.optionallength != 0 and self.pcounter == (self.datalength + self.optionallength + 6):
+                            self.packet.append(b)
+                            for p in self.packet:
+                                print("%02x, " % p, end="")
+                            self.receiving = False
+                        elif b == 0x55 and not self.receiving:
+                            print("\nNew packet: ")
+                            self.packet = [0x55]
+                            self.pcounter = 0
+                            self.datalength = 0
+                            self.optionallength = 0
+                            self.receiving = True
+                        else:
+                            self.packet.append(b)
+                        if self.pcounter == 2:
+                            self.datalength = b
+                        if self.pcounter == 3:
+                            self.optionallength = b
+                        if self.pcounter == 4:
+                            self.packettype = b
+                        # 5: CRC;  dataLength + optionallength +1 CRC
+                        self.pcounter = self.pcounter + 1
+
             self.__callback(self.__count)
             self.__count = self.__count + 1
-            time.sleep(1)
+            time.sleep(0)
     def stop_this_one(self):
         self.__running = False
 
 class EnOceanDongle:
     def __init__(self,hass,ser):
-        self.__ser = serial.Serial(ser, 57600, timeout=0.1)
+        self.__ser = serial.Serial(ser, 57600, timeout=None)
         self.__thread = EnOceanThread(self.__ser,ENOCEAN_LOCK,self.callback)
         self.__thread.start()
         self.__devices = []
@@ -73,6 +105,18 @@ class EnOceanDevice():
         self.stype = ""
 
     def send_command(self,data,optional,packet_type):
+        command = self.build_packet([0xf6, 0x30, 0xfe, 0xfb, 0x71, 0xe1, 0x30 ],[0x01, 0xff, 0xff,  0xff, 0xff, 0x47, 0x00 ],0x01)  # <-- Button pushed (left-top-push)
+        command = self.build_packet([0xf6, 0x00, 0xfe, 0xfb, 0x71, 0xe1, 0x20 ],[0x01, 0xff, 0xff,  0xff, 0xff, 0x44, 0x00 ],0x01)  # <-- Button pushed (left-top-release)
+        command = self.build_packet([0xf6, 0x10, 0xfe, 0xfb, 0x71, 0xe1, 0x30 ],[0x01, 0xff, 0xff,  0xff, 0xff, 0x46, 0x00 ],0x01)  # <-- Button pushed (left-bottom-push)
+        command = self.build_packet([0xf6, 0x00, 0xfe, 0xfb, 0x71, 0xe1, 0x20 ],[0x01, 0xff, 0xff,  0xff, 0xff, 0x47, 0x00 ],0x01)  # <-- Button pushed (left-bottom-release)
+
+        command = self.build_packet([0xf6, 0x70, 0xfe, 0xfb, 0x71, 0xe1, 0x30 ],[0x01, 0xff, 0xff,  0xff, 0xff, 0x4f, 0x00 ],0x01)  # <-- Button pushed (right-top-push)
+
+
+        command = self.build_packet([0xf6, 0x37, 0xfe, 0xfb, 0x71, 0xe1, 0x30 ],[0x01, 0xff, 0xff,  0xff, 0xff, 0x4a, 0x00 ],0x01)  # <-- Button pushed
+        print("GotTmp: ")
+        for i in command:
+            print("0x%02x, " % i,end="")
         command = self.build_packet(data,optional,packet_type)
         command = bytearray(command)
         print("Got: "+str(command))
