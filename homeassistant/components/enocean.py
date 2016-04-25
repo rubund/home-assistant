@@ -41,13 +41,17 @@ class EnOceanThread(threading.Thread):
             with self.__lock:
                 data = bytearray([1])
                 while len(data) != 0:
+                    #print("waiting")
                     data = self.__ser.read()#,timeout=None)
+                    #print("data: "+str(data))
+                    #print("done")
                     #self.rbuffer.extend(data)
                     for b in data:
                         if self.optionallength != 0 and self.pcounter == (self.datalength + self.optionallength + 6):
                             self.packet.append(b)
                             for p in self.packet:
                                 print("%02x, " % p, end="")
+                            print("")
                             self.receiving = False
                         elif b == 0x55 and not self.receiving:
                             print("\nNew packet: ")
