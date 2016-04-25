@@ -37,11 +37,9 @@ class EnOceanThread(threading.Thread):
     def run(self):
         print("\n\nRunning thread\n\n")
         while self.__running:
-            print("Running: %d" % (self.__running))
             with self.__lock:
                 data = bytearray([1])
                 while len(data) != 0:
-                    #print("waiting")
                     data = self.__ser.read()#,timeout=None)
                     #print("data: "+str(data))
                     #print("done")
@@ -54,7 +52,7 @@ class EnOceanThread(threading.Thread):
                             print("")
                             self.receiving = False
                             self.__callback(self.packet)
-                        elif b == 0x55 and not self.receiving:
+                        elif b == 0x55 and (not self.receiving or self.optionallength == 0):
                             print("\nNew packet: ")
                             self.packet = [0x55]
                             self.pcounter = 0
@@ -73,13 +71,13 @@ class EnOceanThread(threading.Thread):
                         self.pcounter = self.pcounter + 1
 
             self.__count = self.__count + 1
-            time.sleep(0)
+            time.sleep(0.1)
     def stop_this_one(self):
         self.__running = False
 
 class EnOceanDongle:
     def __init__(self,hass,ser):
-        self.__ser = serial.Serial(ser, 57600, timeout=None)
+        self.__ser = serial.Serial(ser, 57600, timeout=0.1)
         self.__thread = EnOceanThread(self.__ser,ENOCEAN_LOCK,self.callback)
         self.__thread.start()
         self.__devices = []
