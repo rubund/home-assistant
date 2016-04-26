@@ -18,17 +18,31 @@ class ExampleSensor(enocean.EnOceanDevice,Entity):
         self.temp_temperature = 0
         self.__devid = devid
         self.sensorid = devid
+        self.which = -1
+        self.onoff = -1
 
     @property
     def name(self):
         return 'Temperature'
 
-    def value_changed(self,value):
+    def value_changed(self,value,value2):
         self.temp_temperature = value
         self.update_ha_state()
         print("ID: %s" % str(ATTR_ENTITY_ID))
         print("devID: %s" % str(self.__devid))
-        self.hass.bus.fire('button_pressed', { ATTR_ENTITY_ID: self.sensorid , 'state' : value})
+        if value2 == 0x70:
+            self.which = 0
+            self.onoff = 0
+        elif value2 == 0x50:
+            self.which = 0
+            self.onoff = 1
+        elif value2 == 0x30:
+            self.which = 1
+            self.onoff = 0
+        elif value2 == 0x10:
+            self.which = 1
+            self.onoff = 1
+        self.hass.bus.fire('button_pressed', { ATTR_ENTITY_ID: self.sensorid , 'pushed' : value, 'which' : self.which, 'onoff' : self.onoff})
 
     @property
     def state(self):

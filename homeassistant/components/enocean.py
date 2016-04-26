@@ -94,22 +94,26 @@ class EnOceanDongle:
             self.__ser.write(command)
 
     def callback(self,temp):
-        print("\n\nCalling back %s\n\n",str(temp))
+        #print("\n\nCalling back %s\n\n",str(temp))
         for d in self.__devices:
             if d.stype == "listener":
-                print("Found one listener")
-                if temp[6] == d.sensorid:
-                    if temp[7] != 0x00:
-                        d.value_changed(1)
-                    elif temp[7] == 0x00:
-                        d.value_changed(0)
+                #print("Found one listener")
+                equal = True
+                for i in range(0,4):
+                    if temp[8+i] != d.sensorid[i]:
+                        equal = False
+                if equal:
+                    if temp[12] == 0x30:
+                        d.value_changed(1,temp[7])
+                    elif temp[12] == 0x20:
+                        d.value_changed(0,temp[7])
 
 class EnOceanDevice():
     def __init__(self):
         print("\n\nStarted device\n\n\n")
         ENOCEAN_DONGLE.register_device(self)
         self.stype = ""
-        self.sensorid = 0x00
+        self.sensorid = [0x00,0x00,0x00,0x00]
 
     def send_command(self,data,optional,packet_type):
         command = self.build_packet([0xf6, 0x30, 0xfe, 0xfb, 0x71, 0xe1, 0x30 ],[0x01, 0xff, 0xff,  0xff, 0xff, 0x47, 0x00 ],0x01)  # <-- Button pushed (left-top-push)
