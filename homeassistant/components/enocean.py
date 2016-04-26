@@ -145,6 +145,7 @@ class EnOceanDevice():
 
 
 # Teach for Permundo:
+#1
 #New packet: 
 #55, 00, 0a, 07, 01, eb, a5, 48, 08, 33, 80, 01, 94, 9e, ca, 00, 03, ff, ff, ff, ff, 4c, 00, 7b, 
 #
@@ -153,3 +154,88 @@ class EnOceanDevice():
 #
 #New packet: 
 #55, 00, 0a, 07, 01, eb, a5, 00, 00, 00, 0c, 01, 94, 9e, ca, 00, 03, ff, ff, ff, ff, 4c, 00, ed,
+
+#2
+#New packet: 
+#55, 00, 0d, 07, 01, fd, d4, a0, ff, 33, 00, 09, 01, d2, 01, 94, 9e, ca, 00, 03, ff, ff, ff, ff, 55, 00, 99, 
+#
+#New packet: 
+#55, 00, 0a, 07, 01, eb, a5, 48, 08, 33, 80, 01, 94, 9e, ca, 00, 03, ff, ff, ff, ff, 55, 00, 91, 
+#
+#New packet: 
+#55, 00, 09, 07, 01, 56, d2, 04, 60, 80, 01, 94, 9e, ca, 00, 03, ff, ff, ff, ff, 55, 00, 92, 
+#
+#New packet: 
+#55, 00, 0a, 07, 01, eb, a5, 00, 00, 00, 0c, 01, 94, 9e, ca, 00, 03, ff, ff, ff, ff, 55, 00, 07, 
+
+#3:
+#New packet: 
+#55, 00, 0d, 07, 01, fd, d4, a0, ff, 33, 00, 09, 01, d2, 01, 94, 9e, ca, 00, 03, ff, ff, ff, ff, 52, 00, f2, 
+#
+#New packet: 
+#55, 00, 0a, 07, 01, eb, a5, 48, 08, 33, 80, 01, 94, 9e, ca, 00, 03, ff, ff, ff, ff, 52, 00, fa, 
+#
+
+
+
+
+#with button:
+
+#
+#New packet: 
+#55, 00, 07, 07, 01, 7a, f6, 70, fe, fb, 71, e1, 30, 03, ff, ff, ff, ff, 46, 00, 84, 
+#INFO:homeassistant.core:Bus:Handling <Event state_changed[L]: entity_id=sensor.temperature_4, new_state=<state sensor.temperature_4=1; unit_of_measurement=°C, friendly_name=Temperature @ 2016-04-26T08:15:01.814665+02:00>, old_state=<state sensor.temperature_4=0; unit_of_measurement=°C, friendly_name=Temperature @ 2016-04-26T08:14:50.306600+02:00>>
+#ID: entity_id
+#devID: [254, 251, 113, 225]
+#INFO:homeassistant.core:Bus:Handling <Event button_pressed[L]: entity_id=[254, 251, 113, 225], onoff=0, which=0, pushed=1>
+#INFO:homeassistant.components.automation:Executing When pushing button
+#INFO:homeassistant.core:Bus:Handling <Event logbook_entry[L]: name=When pushing button, message=has been triggered, domain=automation>
+#INFO:homeassistant.helpers.script:Script When pushing button: Running script
+#INFO:homeassistant.helpers.script:Script When pushing button: Executing step %s
+#INFO:homeassistant.core:Bus:Handling <Event call_service[L]: service_call_id=140605427085664-26, service=turn_on, domain=light, service_data=>
+#TUrning on
+#Wanted: bytearray(b'U\x00\n\x00\x01\x80\xa5\x02d\x01\t\xff\xc6\xea\x01\x00n/')
+#GotTmp: 
+#0x55, 0x00, 0x07, 0x07, 0x01, 0x7a, 0xf6, 0x37, 0xfe, 0xfb, 0x71, 0xe1, 0x30, 0x01, 0xff, 0xff, 0xff, 0xff, 0x4a, 0x00, 0xdf, Got: bytearray(b'U\x00\n\x00\x01\x80\xa5\x02\x13\x01\t\xff\xc6\xea\x01\x00\x92')
+#
+#New packet: 
+#55, 00, 09, 07, 01, 56, d2, 04, 60, 80, 01, 94, 9e, ca, 00, 03, ff, ff, ff, ff, 47, 00, ef, 
+#
+#New packet: 
+#55, 00, 0a, 07, 01, eb, a5, 00, 00, 00, 0c, 01, 94, 9e, ca, 00, 03, ff, ff, ff, ff, 47, 00, 7a, 
+#TUrning on
+#Wanted: bytearray(b'U\x00\n\x00\x01\x80\xa5\x02d\x01\t\xff\xc6\xea\x01\x00n/')
+#GotTmp: 
+#0x55, 0x00, 0x07, 0x07, 0x01, 0x7a, 0xf6, 0x37, 0xfe, 0xfb, 0x71, 0xe1, 0x30, 0x01, 0xff, 0xff, 0xff, 0xff, 0x4a, 0x00, 0xdf, Got: bytearray(b'U\x00\n\x00\x01\x80\xa5\x02\x13\x01\t\xff\xc6\xea\x01\x00\x92')
+#INFO:homeassistant.core:Bus:Handling <Event service_executed[L]: service_call_id=140605427085664-26>
+#
+#New packet: 
+#
+#New packet: 
+#
+#New packet: 
+#55, 00, 07, 07, 01, 7a, f6, 00, fe, fb, 71, e1, 20, 03, ff, ff, ff, ff, 43, 00, 88, 
+#INFO:homeassistant.core:Bus:Handling <Event state_changed[L]: entity_id=sensor.temperature_4, new_state=<state sensor.temperature_4=0; unit_of_measurement=°C, friendly_name=Temperature @ 2016-04-26T08:15:02.098163+02:00>, old_state=<state sensor.temperature_4=1; unit_of_measurement=°C, friendly_name=Temperature @ 2016-04-26T08:15:01.814665+02:00>>
+#ID: entity_id
+#devID: [254, 251, 113, 225]
+#INFO:homeassistant.core:Bus:Handling <Event button_pressed[L]: entity_id=[254, 251, 113, 225], onoff=0, which=0, pushed=0>
+#INFO:homeassistant.components.automation:Executing When pushing button
+#INFO:homeassistant.core:Bus:Handling <Event logbook_entry[L]: name=When pushing button, message=has been triggered, domain=automation>
+#INFO:homeassistant.helpers.script:Script When pushing button: Running script
+#INFO:homeassistant.helpers.script:Script When pushing button: Executing step %s
+#INFO:homeassistant.core:Bus:Handling <Event call_service[L]: service_call_id=140605427085664-27, service=turn_on, domain=light, service_data=>
+#TUrning on
+#Wanted: bytearray(b'U\x00\n\x00\x01\x80\xa5\x02d\x01\t\xff\xc6\xea\x01\x00n/')
+#GotTmp: 
+#0x55, 0x00, 0x07, 0x07, 0x01, 0x7a, 0xf6, 0x37, 0xfe, 0xfb, 0x71, 0xe1, 0x30, 0x01, 0xff, 0xff, 0xff, 0xff, 0x4a, 0x00, 0xdf, Got: bytearray(b'U\x00\n\x00\x01\x80\xa5\x02\x13\x01\t\xff\xc6\xea\x01\x00\x92')
+#TUrning on
+#Wanted: bytearray(b'U\x00\n\x00\x01\x80\xa5\x02d\x01\t\xff\xc6\xea\x01\x00n/')
+#GotTmp: 
+#0x55, 0x00, 0x07, 0x07, 0x01, 0x7a, 0xf6, 0x37, 0xfe, 0xfb, 0x71, 0xe1, 0x30, 0x01, 0xff, 0xff, 0xff, 0xff, 0x4a, 0x00, 0xdf, Got: bytearray(b'U\x00\n\x00\x01\x80\xa5\x02\x13\x01\t\xff\xc6\xea\x01\x00\x92')
+#INFO:homeassistant.core:Bus:Handling <Event service_executed[L]: service_call_id=140605427085664-27>
+#
+#New packet: 
+#
+#New packet: 
+#
+#
