@@ -98,16 +98,18 @@ class EnOceanDongle:
         for d in self.__devices:
             if d.stype == "listener":
                 print("Found one listener")
-                if temp[7] == 0x50:
-                    d.value_changed(1)
-                elif temp[7] == 0x00:
-                    d.value_changed(0)
+                if temp[6] == d.sensorid:
+                    if temp[7] != 0x00:
+                        d.value_changed(1)
+                    elif temp[7] == 0x00:
+                        d.value_changed(0)
 
 class EnOceanDevice():
     def __init__(self):
         print("\n\nStarted device\n\n\n")
         ENOCEAN_DONGLE.register_device(self)
         self.stype = ""
+        self.sensorid = 0x00
 
     def send_command(self,data,optional,packet_type):
         command = self.build_packet([0xf6, 0x30, 0xfe, 0xfb, 0x71, 0xe1, 0x30 ],[0x01, 0xff, 0xff,  0xff, 0xff, 0x47, 0x00 ],0x01)  # <-- Button pushed (left-top-push)
