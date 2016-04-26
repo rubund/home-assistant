@@ -37,7 +37,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     #    return False
 
     # Add devices
-    add_devices(AwesomeLight(light) for light in [0,1])
+    add_devices([AwesomeLight(0)])
 
 class AwesomeLight(enocean.EnOceanDevice,Light):
     """Represents an AwesomeLight in Home Assistant."""
