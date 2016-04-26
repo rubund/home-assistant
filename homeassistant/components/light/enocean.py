@@ -72,6 +72,10 @@ class AwesomeLight(enocean.EnOceanDevice,Light):
         """If light is on."""
         return self._on_state
 
+    @property
+    def name(self):
+        return "Dimmelys"
+
     def turn_on(self, **kwargs):
         print("TUrning on")
         a = bytearray(b'\x55\x00\x0A\x00\x01\x80\xA5\x02\x64\x01\x09\xFF\xC6\xEA\x01\x00\x6E/')
