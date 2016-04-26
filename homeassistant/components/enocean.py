@@ -13,8 +13,8 @@ ENOCEAN_DONGLE = None
 def setup(hass,config):
     global ENOCEAN_DONGLE
     ""
-    hass.states.set('enocean.runstatus', 'It\' ok you know')
-    print("First setting up")
+    #hass.states.set('enocean.runstatus', 'It\' ok you know')
+    #print("First setting up")
 
     ENOCEAN_DONGLE = EnOceanDongle(hass,"/dev/ttyUSB0")
     return True

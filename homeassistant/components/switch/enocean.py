@@ -2,7 +2,7 @@ import logging
 
 # Import the device class from the component that you want to support
 #from homeassistant.components.light import Light
-from homeassistant.const import CONF_HOST, CONF_USERNAME, CONF_PASSWORD
+from homeassistant.const import CONF_HOST, CONF_USERNAME, CONF_PASSWORD, CONF_NAME
 from homeassistant.components import enocean
 from homeassistant.helpers.entity import ToggleEntity
 from homeassistant.const import ATTR_ENTITY_ID
@@ -23,6 +23,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     username = config.get(CONF_USERNAME)
     password = config.get(CONF_PASSWORD)
     devid = config.get(ATTR_ENTITY_ID, None)
+    devname = config.get(CONF_NAME, "Enocean actuator")
 
     #if host is None or username is None or password is None:
     #    _LOGGER.error('Invalid config. Expected %s, %s and %s',
@@ -40,19 +41,20 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
     # Add devices
     #add_devices(AwesomeLight(light) for light in [0,1])
-    add_devices([AwesomeLight(devid)])
+    add_devices([AwesomeLight(devid, devname)])
 
 class AwesomeLight(enocean.EnOceanDevice,ToggleEntity):
     """Represents an AwesomeLight in Home Assistant."""
 
-    def __init__(self, devid):
+    def __init__(self, devid, devname):
         """Initialize an AwesomeLight."""
         enocean.EnOceanDevice.__init__(self)
         self._devid = devid
+        self._devname = devname
         self._light = None
         self._on_state = False
         self._on_state2 = False
-        print("\n\n\nHER ER JEG\n")
+        #print("\n\n\nHER ER JEG\n")
 
     def update(self):
         """Fetch new state data for this light.
@@ -77,7 +79,7 @@ class AwesomeLight(enocean.EnOceanDevice,ToggleEntity):
 
     @property
     def name(self):
-        return "Enocean actuator"
+        return self._devname
 
 
     def turn_on(self, **kwargs):
