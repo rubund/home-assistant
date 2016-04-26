@@ -142,3 +142,14 @@ class EnOceanDevice():
         ords.append(crc8.calc(ords[6:]))
         return ords
         
+
+
+# Teach for Permundo:
+#New packet: 
+#55, 00, 0a, 07, 01, eb, a5, 48, 08, 33, 80, 01, 94, 9e, ca, 00, 03, ff, ff, ff, ff, 4c, 00, 7b, 
+#
+#New packet: 
+#55, 00, 09, 07, 01, 56, d2, 04, 60, 80, 01, 94, 9e, ca, 00, 02, ff, ff, ff, ff, 4c, 00, a7, 
+#
+#New packet: 
+#55, 00, 0a, 07, 01, eb, a5, 00, 00, 00, 0c, 01, 94, 9e, ca, 00, 03, ff, ff, ff, ff, 4c, 00, ed,
