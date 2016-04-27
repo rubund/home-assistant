@@ -21,9 +21,9 @@ class ExampleSensor(enocean.EnOceanDevice,Entity):
         self.which = -1
         self.onoff = -1
 
-    @property
-    def name(self):
-        return 'Temperature'
+    #@property
+    #def name(self):
+    #    return 'Temperature'
 
     def value_changed(self,value,value2):
         self.temp_temperature = value
@@ -44,10 +44,10 @@ class ExampleSensor(enocean.EnOceanDevice,Entity):
             self.onoff = 1
         self.hass.bus.fire('button_pressed', { ATTR_ENTITY_ID: self.sensorid , 'pushed' : value, 'which' : self.which, 'onoff' : self.onoff})
 
-    @property
-    def state(self):
-        return self.temp_temperature
+    #@property
+    #def state(self):
+    #    return self.temp_temperature
 
-    @property
-    def unit_of_measurement(self):
-        return TEMP_CELCIUS
+    #@property
+    #def unit_of_measurement(self):
+    #    return TEMP_CELCIUS
