@@ -3,8 +3,9 @@ import math
 
 # Import the device class from the component that you want to support
 from homeassistant.components.light import Light, ATTR_BRIGHTNESS
-from homeassistant.const import CONF_HOST, CONF_USERNAME, CONF_PASSWORD
+from homeassistant.const import CONF_HOST, CONF_USERNAME, CONF_PASSWORD, CONF_NAME
 from homeassistant.components import enocean
+from homeassistant.const import ATTR_ENTITY_ID
 
 # Home Assistant depends on 3rd party packages for API specific code.
 #REQUIREMENTS = ['awesome_lights==1.2.3']
@@ -21,6 +22,8 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     host = config.get(CONF_HOST)
     username = config.get(CONF_USERNAME)
     password = config.get(CONF_PASSWORD)
+    devid = config.get(ATTR_ENTITY_ID, None)
+    devname = config.get(CONF_NAME, "Enocean actuator")
 
     #if host is None or username is None or password is None:
     #    _LOGGER.error('Invalid config. Expected %s, %s and %s',
@@ -37,18 +40,20 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     #    return False
 
     # Add devices
-    add_devices([AwesomeLight(0)])
+    add_devices([AwesomeLight(devid, devname)])
 
 class AwesomeLight(enocean.EnOceanDevice,Light):
     """Represents an AwesomeLight in Home Assistant."""
 
-    def __init__(self, light):
+    def __init__(self, devid, devname):
         """Initialize an AwesomeLight."""
         enocean.EnOceanDevice.__init__(self)
         self._light = None
         self._on_state = False
         self._on_state2 = False
         self._brightness = 50
+        self._devid = devid
+        self._devname = devname
         print("\n\n\nHER ER JEG\n")
 
     def update(self):
@@ -57,6 +62,10 @@ class AwesomeLight(enocean.EnOceanDevice,Light):
         This is the only method that should fetch new data for Home Assitant.
         """
         #self._light.update()
+
+    @property
+    def name(self):
+        return self._devname
 
     @property
     def brightness(self):
@@ -72,10 +81,6 @@ class AwesomeLight(enocean.EnOceanDevice,Light):
         """If light is on."""
         return self._on_state
 
-    @property
-    def name(self):
-        return "Dimmelys"
-
     def turn_on(self, **kwargs):
         print("TUrning on")
         a = bytearray(b'\x55\x00\x0A\x00\x01\x80\xA5\x02\x64\x01\x09\xFF\xC6\xEA\x01\x00\x6E/')
@@ -89,7 +94,10 @@ class AwesomeLight(enocean.EnOceanDevice,Light):
         #self.send_command(a)
         #self.send_command(data=[0x01,0x80,0xa5,0x02,0x64,0x09,0xff,0xc6,0xea,0x01],optional=[],packet_type=0x00)
         #self.send_command([0xa5,0x02,bval,0x01,0x09,0xff,0xc6,0xea,0x01,0x00],[],0x01)
-        self.send_command([0xa5,0x02,bval,0x01,0x09,0xff,0xc6,0xea,0x03,0x00],[],0x01)
+        command = [0xa5,0x02,bval,0x01,0x09]
+        command.extend(self._devid)
+        command.extend([0x00])
+        self.send_command(command,[],0x01)
         #55 000A00 01 80 A5 02 64 01 09FFC6EA030044
         self._on_state = True
 
@@ -97,6 +105,11 @@ class AwesomeLight(enocean.EnOceanDevice,Light):
         print("TUrning off")
         a = bytearray(b'\x55\x00\x0A\x00\x01\x80\xA5\x02\x00\x01\x08\xFF\xC6\xEA\x01\x00\xB9/')
         #self.send_command(a)
-        self.send_command([0xa5,0x02,0x00,0x01,0x09,0xff,0xc6,0xea,0x03,0x00],[],0x01)
+        command = [0xa5,0x02,0x00,0x01,0x09]
+        command.extend(self._devid)
+        command.extend([0x00])
+        self.send_command(command,[],0x01)
+        #self.send_command([0xa5,0x02,0x00,0x01,0x09,0xff,0xc6,0xea,0x04,0x00],[],0x01)
+                #55000A000180 A5026401090000000000D5
         self._on_state = False
 
