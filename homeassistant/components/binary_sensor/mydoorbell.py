@@ -17,6 +17,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
 
 class ListenThread(threading.Thread):
     def __init__(self,dev):
+            threading.Thread.__init__(self)
             self.dev = dev
 
     def run(self):
@@ -31,6 +32,8 @@ class ExampleSensor(BinarySensorDevice):
 
     def __init__(self):
         print("\n\nSTARTED MYDOORBELL\n\n")
+        th = ListenThread(self)
+        th.start()
         #enocean.EnOceanDevice.__init__(self)
 
     @property
