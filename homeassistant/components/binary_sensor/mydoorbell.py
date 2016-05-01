@@ -27,11 +27,11 @@ class ListenThread(threading.Thread):
             self.dev.alert()
         s.close()
 
-class ExampleSensor(enocean.EnOceanDevice,BinarySensorDevice):
+class ExampleSensor(BinarySensorDevice):
 
     def __init__(self):
         print("\n\nSTARTED MYDOORBELL\n\n")
-        enocean.EnOceanDevice.__init__(self)
+        #enocean.EnOceanDevice.__init__(self)
 
     @property
     def name(self):
