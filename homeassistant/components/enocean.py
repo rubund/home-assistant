@@ -107,6 +107,15 @@ class EnOceanDongle:
                         d.value_changed(1,temp[7])
                     elif temp[12] == 0x20:
                         d.value_changed(0,temp[7])
+            elif d.stype == "powersensor":
+                #print("Found one listener")
+                equal = True
+                for i in range(0,4):
+                    if temp[11+i] != d.sensorid[i]:
+                        equal = False
+                if equal:
+                    print("FOUND!!!")
+                    d.value_changed(temp[9])
 
 class EnOceanDevice():
     def __init__(self):
