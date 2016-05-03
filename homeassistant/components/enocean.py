@@ -115,8 +115,12 @@ class EnOceanDongle:
                         equal = False
                 if equal:
                     print("FOUND!!!")
-                    val = temp[9] + (temp[8] << 8)
-                    d.value_changed(val)
+                    if temp[10] == 0x0C: # power
+                        val = temp[9] + (temp[8] << 8)
+                        d.value_changed(val)
+                    #elif temp[10] == 0x09: # energy
+                    #    val = temp[9] + (temp[8] << 8)
+                    #    d.value_changed(val)
 
 class EnOceanDevice():
     def __init__(self):
