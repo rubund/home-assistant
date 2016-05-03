@@ -5,6 +5,7 @@ from homeassistant.const import ATTR_ENTITY_ID
 
 import socket
 import threading
+import json
 
 #DEPENDENCIES = ["enocean"]
 #
@@ -21,11 +22,22 @@ class ListenThread(threading.Thread):
             self.dev = dev
 
     def run(self):
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect(("192.168.1.78",8300)) 
         while True:
-            rdata = s.recv(50)
-            self.dev.alert()
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect(("192.168.1.78",8300)) 
+            s.settimeout(1)
+            while True:
+                try:
+                    rdata = s.recv()
+                    js = json.load(rdata.decode('utf-8'))
+                    print(js)
+                    self.dev.alert()
+                except socket.timeout:
+                    ""
+                except socket.error:
+                    s.close()
+                    break
+                
         s.close()
 
 class ExampleSensor(BinarySensorDevice):
