@@ -111,13 +111,13 @@ class AwesomeLight(enocean.EnOceanDevice,ToggleEntity):
         #self.send_command(data=[0xD2,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00],optional=[0x03,0x01,0x90,0x84,0x3c,0xff,0x00],packet_type=0x01)
         self._on_state = False
 
-    @property
-    def unit_of_measurement(self):
-        return "W"
+    #@property
+    #def unit_of_measurement(self):
+    #    return "W"
 
-    @property
-    def state(self):
-        return 50
+    #@property
+    #def state(self):
+    #    return 50
 
 
 # 55000A0701EBA50004060C01949ECA0003FFFFFFFF490026 ovn_stue power 1030
