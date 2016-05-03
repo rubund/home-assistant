@@ -111,3 +111,21 @@ class AwesomeLight(enocean.EnOceanDevice,ToggleEntity):
         #self.send_command(data=[0xD2,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00],optional=[0x03,0x01,0x90,0x84,0x3c,0xff,0x00],packet_type=0x01)
         self._on_state = False
 
+    @property
+    def unit_of_measurement(self):
+        return "W"
+
+    @property
+    def state(self):
+        return 50
+
+
+# 55000A0701EBA50004060C01949ECA0003FFFFFFFF490026 ovn_stue power 1030
+# 55000A0701EBA50001EC0C01949ECA0003FFFFFFFF4700AD ovn_stue power 492
+# 55000A0701EBA50000020C01949ECA0003FFFFFFFF490061 ovn_stue power 2
+# 55000A0701EBA50004070C01949ECA0003FFFFFFFF4900C3 ovn_stue power 1031
+# 55000A0701EBA50000030C01949ECA0003FFFFFFFF470052 ovn_stue power 3
+# 55000A0701EBA500001F0C01913DE70003FFFFFFFF49007C nattbord power 31
+# 55000A0701EBA500011B090190843C0003FFFFFFFF4300FE tvbenk energy 28.3
+# 55000A0701EBA50000000C0190843C0003FFFFFFFF4300EE tvbenk power 0
+
