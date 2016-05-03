@@ -28,10 +28,12 @@ class ListenThread(threading.Thread):
             s.settimeout(1)
             while True:
                 try:
-                    rdata = s.recv()
-                    js = json.load(rdata.decode('utf-8'))
-                    print(js)
-                    self.dev.alert()
+                    rdata = s.recv(1000).decode('utf-8')
+                    js = json.loads(rdata)
+                    if js['state'] == True:
+                        self.dev.alert(True)
+                    else:
+                        self.dev.alert(False)
                 except socket.timeout:
                     ""
                 except socket.error:
@@ -55,9 +57,9 @@ class ExampleSensor(BinarySensorDevice):
     #def value_changed(self,value,value2):
         #self.temp_temperature = value
         #self.update_ha_state()
-    def alert(self):
+    def alert(self,val):
         print("Door bell fired")
-        self.hass.bus.fire('button_pressed', { ATTR_ENTITY_ID: "ringeklokke" })
+        self.hass.bus.fire('button_pressed', { ATTR_ENTITY_ID: "ringeklokke" , "state" : val })
 
     #@property
     #def state(self):
