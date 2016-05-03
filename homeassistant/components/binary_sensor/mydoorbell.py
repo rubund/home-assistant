@@ -48,6 +48,7 @@ class ExampleSensor(BinarySensorDevice):
         print("\n\nSTARTED MYDOORBELL\n\n")
         th = ListenThread(self)
         th.start()
+        self.inout = False
         #enocean.EnOceanDevice.__init__(self)
 
     @property
@@ -56,14 +57,15 @@ class ExampleSensor(BinarySensorDevice):
 
     #def value_changed(self,value,value2):
         #self.temp_temperature = value
-        #self.update_ha_state()
     def alert(self,val):
         print("Door bell fired")
         self.hass.bus.fire('button_pressed', { ATTR_ENTITY_ID: "ringeklokke" , "state" : val })
+        self.inout = val
+        self.update_ha_state()
 
-    #@property
-    #def state(self):
-    #    return False # self.temp_temperature
+    @property
+    def state(self):
+        return self.inout
 
     #@property
     #def unit_of_measurement(self):
