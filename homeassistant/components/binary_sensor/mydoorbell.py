@@ -30,15 +30,18 @@ class ListenThread(threading.Thread):
                 try:
                     rdata = s.recv(1000).decode('utf-8')
                     js = json.loads(rdata)
-                    if js['state'] == True:
-                        self.dev.alert(True)
-                    else:
-                        self.dev.alert(False)
+                    if 'state' in js:
+                        if js['state'] == True:
+                            self.dev.alert(True)
+                        else:
+                            self.dev.alert(False)
                 except socket.timeout:
                     ""
                 except socket.error:
                     s.close()
                     break
+                except ValueError:
+                    continue
                 
         s.close()
 
