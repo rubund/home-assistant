@@ -97,7 +97,7 @@ class EnOceanDongle:
                     if temp.sender == self._combine_hex(d.sensorid):
                         print("Found one listener 2")
                         d.value_changed(value)
-                if rxtype == "power" and d.stype == "swtch":
+                if rxtype == "power" and d.stype == "switch":
                     print("POWER")
                     if temp.sender == self._combine_hex(d.sensorid):
                         print("Found one listener 2")
