@@ -61,61 +61,43 @@ class EnOceanDongle:
         if isinstance(temp,RadioPacket):
             print("RadioPacket received")
             print("%08x" % temp.sender)
+            rxtype = None
+            value = None
             if temp.data[6] == 0x30:
                 print("Pushed button")
+                rxtype == "wallswitch"
+                value = 1
             elif temp.data[6] == 0x20:
                 print("Released button")
+                rxtype == "wallswitch"
+                value = 0 
             elif temp.data[4] == 0x0c:
+                rxtype == "power"
+                value = temp.data[3] + (temp.data[2] << 8)
                 print("Power report")
             elif temp.data[2] == 0x60:
+                rxtype = "switch_status"
                 if temp.data[3] == 0xe4:
+                    value = 1
                     print("Switch on")
                 elif temp.data[3] == 0x80:
+                    value = 0
                     print("Switch off")
             for d in self.__devices:
-                if d.stype == "listener":
+                if rxtype == "wallswitch" and d.stype == "listener":
                     print("LISTENER")
                     print(self._combine_hex(d.sensorid))
                     if temp.sender == self._combine_hex(d.sensorid):
                         print("Found one listener 1")
-                    #equal = True
-                    #for i in range(0,4):
-                    #    if temp[8+i] != d.sensorid[i]:
-                    #        equal = False
-                    #if equal:
-                    #    if temp[12] == 0x30:
-                    #        d.value_changed(1,temp[7])
-                    #    elif temp[12] == 0x20:
-                    #        d.value_changed(0,temp[7])
-                elif d.stype == "powersensor":
+                        d.value_changed(value,temp.data[1])
+                elif rxtype == "power" and d.stype == "powersensor":
                     if temp.sender == self._combine_hex(d.sensorid):
                         print("Found one listener 2")
-                    #equal = True
-                    #for i in range(0,4):
-                    #    if temp[11+i] != d.sensorid[i]:
-                    #        equal = False
-                    #if equal:
-                    #    print("FOUND!!!")
-                    #    if temp[10] == 0x0C: # power
-                    #        val = temp[9] + (temp[8] << 8)
-                    #        d.value_changed(val)
-                    #    #elif temp[10] == 0x09: # energy
-                    #    #    val = temp[9] + (temp[8] << 8)
-                    #    #    d.value_changed(val)
+                        d.value_changed(value)
                 elif d.stype == "switch":
                     if temp.sender == self._combine_hex(d.sensorid):
                         print("Found one listener 3")
-                    #equal = True
-                    #for i in range(0,4):
-                    #    if temp[10+i] != d.sensorid[i]:
-                    #        equal = False
-                    #if equal:
-                    #    print("FOUND!!!")
-                    #    if temp[8] == 0x60:
-                    #        if temp[9] == 0xe4:
-                    #            d.value_changed(1)
-                    #        elif temp[9] == 0x80:
-                    #            d.value_changed(0)
+                        d.value_changed(value)
 
 class EnOceanDevice():
     def __init__(self):
