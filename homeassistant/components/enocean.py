@@ -48,6 +48,14 @@ class EnOceanDongle:
         #with(ENOCEAN_LOCK):
         #    self.__ser.write(command)
 
+    def _combine_hex(self, data):
+        ''' Combine list of integer values to one big integer '''
+        output = 0x00
+        for i, d in enumerate(reversed(data)):
+            output |= (d << i * 8)
+        return output
+
+
     def callback(self,temp):
         print("Callback %s" % str(temp))
         if isinstance(temp,RadioPacket):
@@ -64,46 +72,50 @@ class EnOceanDongle:
                     print("Switch on")
                 elif temp.data[3] == 0x80:
                     print("Switch off")
-        return
-        #print("\n\nCalling back %s\n\n",str(temp))
-        for d in self.__devices:
-            if d.stype == "listener":
-                #print("Found one listener")
-                equal = True
-                for i in range(0,4):
-                    if temp[8+i] != d.sensorid[i]:
-                        equal = False
-                if equal:
-                    if temp[12] == 0x30:
-                        d.value_changed(1,temp[7])
-                    elif temp[12] == 0x20:
-                        d.value_changed(0,temp[7])
-            elif d.stype == "powersensor":
-                #print("Found one listener")
-                equal = True
-                for i in range(0,4):
-                    if temp[11+i] != d.sensorid[i]:
-                        equal = False
-                if equal:
-                    print("FOUND!!!")
-                    if temp[10] == 0x0C: # power
-                        val = temp[9] + (temp[8] << 8)
-                        d.value_changed(val)
-                    #elif temp[10] == 0x09: # energy
-                    #    val = temp[9] + (temp[8] << 8)
-                    #    d.value_changed(val)
-            elif d.stype == "switch":
-                equal = True
-                for i in range(0,4):
-                    if temp[10+i] != d.sensorid[i]:
-                        equal = False
-                if equal:
-                    print("FOUND!!!")
-                    if temp[8] == 0x60:
-                        if temp[9] == 0xe4:
-                            d.value_changed(1)
-                        elif temp[9] == 0x80:
-                            d.value_changed(0)
+            for d in self.__devices:
+                if d.stype == "listener":
+                    print("LISTENER")
+                    print(self._combine_hex(d.sensorid))
+                    if temp.sender == self._combine_hex(d.sensorid):
+                        print("Found one listener 1")
+                    #equal = True
+                    #for i in range(0,4):
+                    #    if temp[8+i] != d.sensorid[i]:
+                    #        equal = False
+                    #if equal:
+                    #    if temp[12] == 0x30:
+                    #        d.value_changed(1,temp[7])
+                    #    elif temp[12] == 0x20:
+                    #        d.value_changed(0,temp[7])
+                elif d.stype == "powersensor":
+                    if temp.sender == self._combine_hex(d.sensorid):
+                        print("Found one listener 2")
+                    #equal = True
+                    #for i in range(0,4):
+                    #    if temp[11+i] != d.sensorid[i]:
+                    #        equal = False
+                    #if equal:
+                    #    print("FOUND!!!")
+                    #    if temp[10] == 0x0C: # power
+                    #        val = temp[9] + (temp[8] << 8)
+                    #        d.value_changed(val)
+                    #    #elif temp[10] == 0x09: # energy
+                    #    #    val = temp[9] + (temp[8] << 8)
+                    #    #    d.value_changed(val)
+                elif d.stype == "switch":
+                    if temp.sender == self._combine_hex(d.sensorid):
+                        print("Found one listener 3")
+                    #equal = True
+                    #for i in range(0,4):
+                    #    if temp[10+i] != d.sensorid[i]:
+                    #        equal = False
+                    #if equal:
+                    #    print("FOUND!!!")
+                    #    if temp[8] == 0x60:
+                    #        if temp[9] == 0xe4:
+                    #            d.value_changed(1)
+                    #        elif temp[9] == 0x80:
+                    #            d.value_changed(0)
 
 class EnOceanDevice():
     def __init__(self):
