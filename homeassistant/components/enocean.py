@@ -65,16 +65,16 @@ class EnOceanDongle:
             value = None
             if temp.data[6] == 0x30:
                 print("Pushed button")
-                rxtype == "wallswitch"
+                rxtype = "wallswitch"
                 value = 1
             elif temp.data[6] == 0x20:
                 print("Released button")
-                rxtype == "wallswitch"
+                rxtype = "wallswitch"
                 value = 0 
             elif temp.data[4] == 0x0c:
-                rxtype == "power"
+                rxtype = "power"
                 value = temp.data[3] + (temp.data[2] << 8)
-                print("Power report")
+                print("Power report: %d" % value)
             elif temp.data[2] == 0x60:
                 rxtype = "switch_status"
                 if temp.data[3] == 0xe4:
@@ -84,17 +84,20 @@ class EnOceanDongle:
                     value = 0
                     print("Switch off")
             for d in self.__devices:
+                print("%08x" % self._combine_hex(d.sensorid))
+                if temp.sender == self._combine_hex(d.sensorid):
+                    print("FOUND %08x: %s, %s" % (temp.sender,rxtype,d.stype))
                 if rxtype == "wallswitch" and d.stype == "listener":
                     print("LISTENER")
-                    print(self._combine_hex(d.sensorid))
                     if temp.sender == self._combine_hex(d.sensorid):
                         print("Found one listener 1")
                         d.value_changed(value,temp.data[1])
                 elif rxtype == "power" and d.stype == "powersensor":
+                    print("POWER")
                     if temp.sender == self._combine_hex(d.sensorid):
                         print("Found one listener 2")
                         d.value_changed(value)
-                elif d.stype == "switch":
+                elif rxtype == "switch_status" and d.stype == "switch":
                     if temp.sender == self._combine_hex(d.sensorid):
                         print("Found one listener 3")
                         d.value_changed(value)
