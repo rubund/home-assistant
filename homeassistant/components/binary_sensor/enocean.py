@@ -48,7 +48,7 @@ class ExampleSensor(enocean.EnOceanDevice,BinarySensorDevice):
         elif value2 == 0x10:
             self.which = 1
             self.onoff = 1
-        self.hass.bus.fire('button_pressed', { ATTR_ENTITY_ID: self.sensorid , 'pushed' : value, 'which' : self.which, 'onoff' : self.onoff})
+        self.hass.bus.fire('button_pressed', { "id": self.sensorid , 'pushed' : value, 'which' : self.which, 'onoff' : self.onoff})
 
     #@property
     #def state(self):
