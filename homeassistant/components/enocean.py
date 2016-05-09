@@ -121,6 +121,18 @@ class EnOceanDongle:
                     #elif temp[10] == 0x09: # energy
                     #    val = temp[9] + (temp[8] << 8)
                     #    d.value_changed(val)
+            elif d.stype == "switch":
+                equal = True
+                for i in range(0,4):
+                    if temp[10+i] != d.sensorid[i]:
+                        equal = False
+                if equal:
+                    print("FOUND!!!")
+                    if temp[8] == 0x60:
+                        if temp[9] == 0xe4:
+                            d.value_changed(1)
+                        elif temp[9] == 0x80:
+                            d.value_changed(0)
 
 class EnOceanDevice():
     def __init__(self):

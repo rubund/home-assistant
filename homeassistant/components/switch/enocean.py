@@ -54,6 +54,7 @@ class AwesomeLight(enocean.EnOceanDevice,ToggleEntity):
         self._light = None
         self._on_state = False
         self._on_state2 = False
+        self.stype = "switch"
         #print("\n\n\nHER ER JEG\n")
 
     def update(self):
@@ -110,6 +111,10 @@ class AwesomeLight(enocean.EnOceanDevice,ToggleEntity):
         self.send_command(data=[0xD2,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00],optional=optional,packet_type=0x01)
         #self.send_command(data=[0xD2,0x01,0x00,0x00,0x00,0x00,0x00,0x00,0x00],optional=[0x03,0x01,0x90,0x84,0x3c,0xff,0x00],packet_type=0x01)
         self._on_state = False
+
+    def value_changed(self,val):
+        self._on_state = val
+        self.update_ha_state()
 
     #@property
     #def unit_of_measurement(self):
