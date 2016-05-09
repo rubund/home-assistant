@@ -5,6 +5,7 @@ import time
 from homeassistant.util import crc8
 from enocean.communicators.serialcommunicator import SerialCommunicator
 from enocean.protocol.packet import Packet
+from enocean.protocol.packet import RadioPacket
 
 DOMAIN = "enocean"
 
@@ -49,6 +50,20 @@ class EnOceanDongle:
 
     def callback(self,temp):
         print("Callback %s" % str(temp))
+        if isinstance(temp,RadioPacket):
+            print("RadioPacket received")
+            print("%08x" % temp.sender)
+            if temp.data[6] == 0x30:
+                print("Pushed button")
+            elif temp.data[6] == 0x20:
+                print("Released button")
+            elif temp.data[4] == 0x0c:
+                print("Power report")
+            elif temp.data[2] == 0x60:
+                if temp.data[3] == 0xe4:
+                    print("Switch on")
+                elif temp.data[3] == 0x80:
+                    print("Switch off")
         return
         #print("\n\nCalling back %s\n\n",str(temp))
         for d in self.__devices:
