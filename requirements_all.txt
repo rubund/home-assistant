@@ -373,3 +373,5 @@ xmltodict
 
 # homeassistant.components.zeroconf
 zeroconf==0.17.5
+
+enocean

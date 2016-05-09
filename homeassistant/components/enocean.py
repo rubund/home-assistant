@@ -3,8 +3,11 @@ import serial
 import threading
 import time
 from homeassistant.util import crc8
+from enocean.communicators.serialcommunicator import SerialCommunicator
 
 DOMAIN = "enocean"
+
+REQUIREMENTS = ['enocean']
 
 ENOCEAN_LOCK = threading.Lock()
 
