@@ -10,7 +10,7 @@ cnt = 1
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
     global cnt
-    devid = config.get(ATTR_ENTITY_ID, None)
+    devid = config.get("id", None)
     add_devices([ExampleSensor(devid,cnt)])
     cnt = cnt + 1
 

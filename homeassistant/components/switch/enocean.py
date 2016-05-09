@@ -22,7 +22,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     host = config.get(CONF_HOST)
     username = config.get(CONF_USERNAME)
     password = config.get(CONF_PASSWORD)
-    devid = config.get(ATTR_ENTITY_ID, None)
+    devid = config.get("id", None)
     devname = config.get(CONF_NAME, "Enocean actuator")
 
     #if host is None or username is None or password is None:
