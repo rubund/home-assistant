@@ -50,6 +50,7 @@ class AwesomeLight(enocean.EnOceanDevice,ToggleEntity):
         """Initialize an AwesomeLight."""
         enocean.EnOceanDevice.__init__(self)
         self._devid = devid
+        self.sensorid = devid
         self._devname = devname
         self._light = None
         self._on_state = False
