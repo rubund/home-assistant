@@ -83,6 +83,11 @@ class EnOceanDongle:
                 elif temp.data[3] == 0x80:
                     value = 0
                     print("Switch off")
+            elif temp.data[0] == 0xa5 and temp.data[1] == 0x02:
+                print("Received dimmer status")
+                rxtype = "dimmerstatus"
+                value = temp.data[2]
+            #['0xa5', '0x2', '0x64', '0x0', '0x9', '0x1', '0x9e', '0xa7', '0x4b', '0x0'] ['0x1', '0xff', '0xff', '0xff', '0xff', '0x43', '0x0']
             for d in self.__devices:
                 print("%08x" % self._combine_hex(d.sensorid))
                 if temp.sender == self._combine_hex(d.sensorid):
@@ -106,6 +111,10 @@ class EnOceanDongle:
                 if rxtype == "switch_status" and d.stype == "switch":
                     if temp.sender == self._combine_hex(d.sensorid):
                         print("Found one listener 3")
+                        d.value_changed(value)
+                if rxtype == "dimmerstatus" and d.stype == "dimmer":
+                    if temp.sender == self._combine_hex(d.sensorid):
+                        print("Found dimmer")
                         d.value_changed(value)
 
 class EnOceanDevice():

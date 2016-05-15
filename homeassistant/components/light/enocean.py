@@ -21,6 +21,7 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     # Validate passed in config
     devid = config.get("id", None)
     devname = config.get(CONF_NAME, "Enocean actuator")
+    sensorid = config.get("sensorid", [0x00,0x00,0x00,0x00])
 
     #if host is None or username is None or password is None:
     #    _LOGGER.error('Invalid config. Expected %s, %s and %s',
@@ -37,12 +38,12 @@ def setup_platform(hass, config, add_devices, discovery_info=None):
     #    return False
 
     # Add devices
-    add_devices([AwesomeLight(devid, devname)])
+    add_devices([AwesomeLight(devid, devname, sensorid)])
 
 class AwesomeLight(enocean.EnOceanDevice,Light):
     """Represents an AwesomeLight in Home Assistant."""
 
-    def __init__(self, devid, devname):
+    def __init__(self, devid, devname,sensorid):
         """Initialize an AwesomeLight."""
         enocean.EnOceanDevice.__init__(self)
         self._light = None
@@ -50,7 +51,9 @@ class AwesomeLight(enocean.EnOceanDevice,Light):
         self._on_state2 = False
         self._brightness = 50
         self._devid = devid
+        self.sensorid = sensorid
         self._devname = devname
+        self.stype = "dimmer"
         print("\n\n\nHER ER JEG\n")
 
     def update(self):
@@ -110,3 +113,10 @@ class AwesomeLight(enocean.EnOceanDevice,Light):
                 #55000A000180 A5026401090000000000D5
         self._on_state = False
 
+    def value_changed(self, val):
+        self._brightness = math.floor(val / 100.0 * 256.0)
+        if val != 0:
+            self._on_state = True
+        else:
+            self._on_state = False
+        self.update_ha_state()
