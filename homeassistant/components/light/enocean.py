@@ -91,6 +91,8 @@ class AwesomeLight(enocean.EnOceanDevice,Light):
             print("Brightness: %d" % brightness)
 
         bval = math.floor(self._brightness / 256.0 * 100.0)
+        if bval == 0:
+            bval = 1
         #self.send_command(a)
         #self.send_command(data=[0x01,0x80,0xa5,0x02,0x64,0x09,0xff,0xc6,0xea,0x01],optional=[],packet_type=0x00)
         #self.send_command([0xa5,0x02,bval,0x01,0x09,0xff,0xc6,0xea,0x01,0x00],[],0x01)
