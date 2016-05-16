@@ -6,6 +6,7 @@ https://home-assistant.io/components/media_player.cast/
 """
 # pylint: disable=import-error
 import logging
+from datetime import timedelta
 
 from homeassistant.components.media_player import (
     MEDIA_TYPE_MUSIC, MEDIA_TYPE_TVSHOW, MEDIA_TYPE_VIDEO, SUPPORT_NEXT_TRACK,
@@ -15,6 +16,7 @@ from homeassistant.components.media_player import (
 from homeassistant.const import (
     CONF_HOST, STATE_IDLE, STATE_OFF, STATE_PAUSED, STATE_PLAYING,
     STATE_UNKNOWN)
+from homeassistant.util import Throttle
 
 REQUIREMENTS = ['pychromecast==0.7.2']
 CONF_IGNORE_CEC = 'ignore_cec'
@@ -71,13 +73,31 @@ def check_if_open(func):
         self = args[0]
         if self.cast == None:
             try:
-                self.setup_device(self.host,self.port)
-                return func(*args, **kwargs)
+                ""
+                print("Trying to run: %s" % str(func.__name__))
+                if func.__name__ == "media_play":
+                    self.setup_device(self.host,self.port)
+                    return func(*args, **kwargs)
+                else:
+                    return None
             except Exception:
                 print("\n\n##########################\n\nFailed opening chromecast: %s\n\n######################\n\n" % str(Exception))
                 self.cast = None
                 return None
+        else:
+            return func(*args, **kwargs)
     return func_wrapper
+
+import pychromecast
+class PyChromecastOverridden(pychromecast.Chromecast):
+    def __del__(self):
+        """Prevent exception when deleting even if it hasn't been loaded"""
+        try:
+            self.socket_client.stop.set()
+        except Exception:
+            ""
+
+MIN_TIME_BETWEEN_UPDATES = timedelta(seconds=30)
 
 class CastDevice(MediaPlayerDevice):
     """Representation of a Cast device on the network."""
@@ -94,9 +114,10 @@ class CastDevice(MediaPlayerDevice):
             print("\n\n##########################\n\nFailed opening chromecast: %s\n\n######################\n\n" % str(Exception))
             self.cast = None
 
+    #@Throttle(MIN_TIME_BETWEEN_UPDATES)
     def setup_device(self, host, port):
-        import pychromecast
-        self.cast = pychromecast.Chromecast(host, port)
+        print("Trying to setup")
+        self.cast = PyChromecastOverridden(host, port)
 
         self.cast.socket_client.receiver_controller.register_status_listener(
             self)
@@ -104,6 +125,7 @@ class CastDevice(MediaPlayerDevice):
 
         self.cast_status = self.cast.status
         self.media_status = self.cast.media_controller.status
+        return True
 
     @property
     def should_poll(self):
